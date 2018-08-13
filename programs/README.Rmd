@@ -6,6 +6,8 @@ output:
   html_document: 
     keep_md: yes
     number_sections: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -17,42 +19,58 @@ This directory contains all programs necessary to run the cleaning, analysis, et
 ## Setup
 Most parameters are set in the `config.R`:
 ```{r setup_config}
-source("config.R", echo=TRUE)
+source("config.R", echo=FALSE)
 ```
 
 Any libraries needed are called and if necessary installed through `libraries.R`:
 
-```{r setup_libraries}
-source("libraries.R", echo=TRUE)
+```{r setup_libraries,echo=TRUE}
+suppressMessages(source("libraries.R", echo=FALSE))
 ```
 
 
 
 ## Download the replication data from Google Sheet
 The responses to the replication attempts are stored on Google Sheets. 
-```{r download_replication,eval=FALSE}
+```{r download_replication,cache=TRUE}
 source("01_download_replication.R",echo=TRUE)
 ```
 
-## Download the h-index data
-The h-index data is manually compiled and stored on Google Sheets. This downloads those files. For instructions, see the h-index data directory. 
-```{r download_h,eval=FALSE}
-source("02_download_h-index.R", echo=TRUE)
+## Clean the data
+Are there duplicate DOIs? There are `r anyDuplicated(results_exit_raw$DOI)` duplicates in the Exit Questionnaire, we remove them.
+```{r cleaning}
+# For now, we keep the later one
+results_exit <- results_exit_raw %>% 
+  arrange(desc(Timestamp)) %>% 
+  distinct(DOI,.keep_all=TRUE) %>%
+  separate(Timestamp,c("Date_char","Time_char"),sep=" ",remove=TRUE)
+results_entry <- results_entry_raw %>% 
+  arrange(desc(Timestamp)) %>% 
+  distinct(DOI,.keep_all=TRUE) %>%
+  separate(Timestamp,c("Date_char","Time_char"),sep=" ",remove=TRUE)
+results_entry$Date <- as.Date(results_entry$Date_char,"%m/%d/%Y")
+results_exit$Date <- as.Date(results_exit$Date_char,"%m/%d/%Y")
+```
+We're going to restrict it to our 2018 summer team:
+```{r summer18}
+summer18 <- as.vector(unique(subset(results_entry,Date > "2018-06-01")$NetID))
+results_entry.summer18 <- subset(results_entry,Date > "2018-06-01")
 ```
 
-## Preparing and cleaning data
-Both the h-index data and the replication data have some inconsistencies that need to be addressed.
-```{r prep-h-index}
-source("03_prep-h-index.R", echo=TRUE)
+## Results
+Does the article provide computer programs/code?
+```{r}
+table(results_entry.summer18$Programs)
+# This is better done with TextMining programs
+```
+How many articles contained Stata programs?
+```{r}
+table(str_detect(results_entry.summer18$ProgramFormat,"Stata"))
 ```
 
-```{r clean_data} 
-source("04_clean_data.R", echo=TRUE)
+How many articles contained Matlab programs?
+```{r}
+table(str_detect(results_entry.summer18$ProgramFormat,"Matlab"))
 ```
 
-## Core analysis and figures
-The final program produces the tables and figures. 
 
-```{r analytics}
-source("05_analytics.R",echo = TRUE)
-```

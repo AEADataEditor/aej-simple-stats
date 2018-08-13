@@ -21,7 +21,7 @@ pkgTest <- function(x)
 }
 
 #' Define the list of libraries
-libraries <- c("plyr","reshape2","data.table","dplyr","magrittr","stargazer","ggplot2","RefManageR","devtools","bibtex","knitcitations","googlesheets")
+libraries <- c("dplyr","stargazer","ggplot2","RefManageR","devtools","bibtex","knitcitations","googlesheets","tidyr","stringr")
 
 #install_github("cboettig/knitcitations")
 #install.packages("knitcitations")
