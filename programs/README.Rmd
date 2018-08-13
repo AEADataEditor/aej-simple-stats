@@ -55,6 +55,7 @@ We're going to restrict it to our 2018 summer team:
 ```{r summer18}
 summer18 <- as.vector(unique(subset(results_entry,Date > "2018-06-01")$NetID))
 results_entry.summer18 <- subset(results_entry,Date > "2018-06-01")
+results_exit.summer18 <- subset(results_exit,Date > "2018-06-01")
 ```
 
 ## Results
