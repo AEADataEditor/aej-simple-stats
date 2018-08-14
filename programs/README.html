@@ -334,26 +334,365 @@ results_entry$Date &lt;- as.Date(results_entry$Date_char,&quot;%m/%d/%Y&quot;)
 results_exit$Date &lt;- as.Date(results_exit$Date_char,&quot;%m/%d/%Y&quot;)</code></pre>
 <p>We’re going to restrict it to our 2018 summer team:</p>
 <pre class="r"><code>summer18 &lt;- as.vector(unique(subset(results_entry,Date &gt; &quot;2018-06-01&quot;)$NetID))
-results_entry.summer18 &lt;- subset(results_entry,Date &gt; &quot;2018-06-01&quot;)</code></pre>
+results_entry.summer18 &lt;- subset(results_entry,Date &gt; &quot;2018-06-01&quot;)
+results_exit.summer18 &lt;- subset(results_exit,Date &gt; &quot;2018-06-01&quot;)</code></pre>
 </div>
 <div id="results" class="section level2">
 <h2><span class="header-section-number">1.4</span> Results</h2>
 <p>Does the article provide computer programs/code?</p>
-<pre class="r"><code>table(results_entry.summer18$Programs)</code></pre>
-<pre><code>## 
-##  No Yes 
-##  10 229</code></pre>
-<pre class="r"><code># This is better done with TextMining programs</code></pre>
-<p>How many articles contained Stata programs?</p>
-<pre class="r"><code>table(str_detect(results_entry.summer18$ProgramFormat,&quot;Stata&quot;))</code></pre>
-<pre><code>## 
-## FALSE  TRUE 
-##    67   161</code></pre>
-<p>How many articles contained Matlab programs?</p>
-<pre class="r"><code>table(str_detect(results_entry.summer18$ProgramFormat,&quot;Matlab&quot;))</code></pre>
-<pre><code>## 
-## FALSE  TRUE 
-##   153    75</code></pre>
+<pre class="r"><code>kable(table(results_entry.summer18$Programs))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">No</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">229</td>
+</tr>
+<tr class="odd">
+<td align="left">How man</td>
+<td align="right">y articles contained Stata, Matlab, etc. programs? Note that many archives use multiple tools, so the (full) table wouldn’t add up to the count of articles.</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># This is better done with TextMining programs
+# requires the tidytext stuff
+data(&quot;stop_words&quot;)
+words &lt;- results_entry.summer18 %&gt;% 
+  select(c(&quot;ProgramFormat&quot;, &quot;DOI&quot;)) %&gt;% 
+  unnest_tokens(ProgramFormat_all,ProgramFormat) %&gt;%
+  anti_join(stop_words,by = c(&quot;ProgramFormat_all&quot; = &quot;word&quot;)) %&gt;%
+  count(ProgramFormat_all) %&gt;% 
+  arrange(desc(n))
+kable(words)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ProgramFormat_all</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">stata</td>
+<td align="right">162</td>
+</tr>
+<tr class="even">
+<td align="left">matlab</td>
+<td align="right">75</td>
+</tr>
+<tr class="odd">
+<td align="left">NA</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">fortran</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">sas</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">excel</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">dynare</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">eviews</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">file</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">maple</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">gauss</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">mathematica</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">rats</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">7.0</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">access</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">aptech</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">authors</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">eps</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">extensions</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">files</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">jags</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">mctfct_macro_reg.wf1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">microsoft</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">nb</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">pasted</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">produce</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">programs</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">results</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">src</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">tex</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">txt</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">wf1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">winbugs</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>How about datasets? How many articles provide at least some data?</p>
+<pre class="r"><code>kable(table(results_entry.summer18$OnlineDataProvided))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">No</td>
+<td align="right">50</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="right">189</td>
+</tr>
+</tbody>
+</table>
+<p>If the data is not provided, why not?</p>
+<pre class="r"><code>kable(results_entry.summer18 %&gt;% mutate(lDataAbsence = nchar(DataAbsence)) %&gt;% filter(!is.na(DataAbsence)) %&gt;% select(c(&quot;DataAbsence&quot;, &quot;DOI&quot;)) %&gt;% unnest_tokens(DataAbsence_all,DataAbsence, token= stringr::str_split, pattern = &quot;, &quot;) %&gt;% count(DataAbsence_all) %&gt;% arrange(desc(n)) %&gt;% head(10))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">DataAbsence_all</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">confidential data</td>
+<td align="right">23</td>
+</tr>
+<tr class="even">
+<td align="left">proprietary data</td>
+<td align="right">14</td>
+</tr>
+<tr class="odd">
+<td align="left">redistribution not authorized</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">missing data (no justification)</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">other data download site provided</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">licensed data</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">additional data sets are not necessary</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">and is not allowed to be transferred to outside computers due to data security concerns</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">and while the information is available online</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">article runs simulations with chosen parameters</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Are the data accessible only to the authors? Instructions were to answer “yes” if the authors clearly stated that the data are only available to them, and “no” if there is clear evidence that others can access to the data, albeit with restrictions. “DK” was answered in case of doubt.</p>
+<pre class="r"><code>kable(table(results_entry.summer18$DataAvailabilityExclusive))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">DK</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">No</td>
+<td align="right">37</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Information was collected for up to two datasets, classified into whether they were “Analysis data” or “Input data”. The definition given was:</p>
+<pre><code>It is useful to distinguish between two types of data:
+
+1. INPUT DATA: The &quot;underlying source data&quot; as collected by the authors or other agency (eg. the CPS or &quot;my survey&quot; data). This data is used to construct the final analysis data set.
+
+2. ANALYSIS DATA: The post-processed or &quot;cleaned&quot; data set(s) that are direct inputs into the final programs to produce the results reported in the article.
+
+The basic research workflow is as follows:  INPUT DATA -&gt; [preparation programs] -&gt; ANALYSIS DATA -&gt; [regression programs] -&gt; results.
+
+[Comment: Authors will usually only supply the analysis data set. The analysis data set is often constructed from numerous sources, which can sometimes be described within the article itself or in an online appendix.]</code></pre>
+<p>Most articles only described a single dataset:</p>
+<pre class="r"><code>kable(table(results_entry.summer18$DataSetClassification1))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Analysis Data</td>
+<td align="right">114</td>
+</tr>
+<tr class="even">
+<td align="left">Don’t Know</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">Input Data</td>
+<td align="right">45</td>
+</tr>
+<tr class="even">
+<td align="left">In the few cases</td>
+<td align="right">where a second dataset is described, it tends to be a Analysis data set:</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(table(results_entry.summer18$DataSetClassification2))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Analysis Data</td>
+<td align="right">14</td>
+</tr>
+<tr class="even">
+<td align="left">Input Data</td>
+<td align="right">7</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(with(results_entry.summer18 , table(DataSetClassification2, DataSetClassification1)))</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">Analysis Data</th>
+<th align="right">Don’t Know</th>
+<th align="right">Input Data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Analysis Data</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td>Input Data</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 

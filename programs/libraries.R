@@ -21,11 +21,18 @@ pkgTest <- function(x)
 }
 
 #' Define the list of libraries
-libraries <- c("dplyr","stargazer","ggplot2","RefManageR","devtools","bibtex","knitcitations","googlesheets","tidyr","stringr")
+libraries <- c("dplyr","stargazer","ggplot2","RefManageR","devtools","bibtex","knitcitations","googlesheets","tidyr","stringr","knitr")
 
+# These were not automated!
+#
 #install_github("cboettig/knitcitations")
 #install.packages("knitcitations")
 #require(knitcitations)
+#install_github("juliasilge/tidytext")
+
+library(tidytext)
+
+
 
 results <- sapply(as.list(libraries), pkgTest)
 cbind(libraries,results)

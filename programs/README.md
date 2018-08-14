@@ -292,46 +292,169 @@ We're going to restrict it to our 2018 summer team:
 ```r
 summer18 <- as.vector(unique(subset(results_entry,Date > "2018-06-01")$NetID))
 results_entry.summer18 <- subset(results_entry,Date > "2018-06-01")
+results_exit.summer18 <- subset(results_exit,Date > "2018-06-01")
 ```
 
 ## Results
 Does the article provide computer programs/code?
 
 ```r
-table(results_entry.summer18$Programs)
+kable(table(results_entry.summer18$Programs))
 ```
 
-```
-## 
-##  No Yes 
-##  10 229
-```
+
+
+Var1    Freq
+-----  -----
+No        10
+Yes      229
+How many articles contained Stata, Matlab, etc. programs? Note that many archives use multiple tools, so the (full) table wouldn't add up to the count of articles.
 
 ```r
 # This is better done with TextMining programs
+# requires the tidytext stuff
+data("stop_words")
+words <- results_entry.summer18 %>% 
+  select(c("ProgramFormat", "DOI")) %>% 
+  unnest_tokens(ProgramFormat_all,ProgramFormat) %>%
+  anti_join(stop_words,by = c("ProgramFormat_all" = "word")) %>%
+  count(ProgramFormat_all) %>% 
+  arrange(desc(n))
+kable(words)
 ```
-How many articles contained Stata programs?
+
+
+
+ProgramFormat_all         n
+---------------------  ----
+stata                   162
+matlab                   75
+NA                       17
+fortran                  13
+sas                       9
+excel                     5
+dynare                    4
+eviews                    4
+file                      3
+maple                     3
+gauss                     2
+mathematica               2
+rats                      2
+7.0                       1
+access                    1
+aptech                    1
+authors                   1
+eps                       1
+extensions                1
+files                     1
+jags                      1
+mctfct_macro_reg.wf1      1
+microsoft                 1
+nb                        1
+pasted                    1
+produce                   1
+programs                  1
+results                   1
+src                       1
+tex                       1
+txt                       1
+wf1                       1
+winbugs                   1
+
+How about datasets? How many articles provide at least some data?
 
 ```r
-table(str_detect(results_entry.summer18$ProgramFormat,"Stata"))
+kable(table(results_entry.summer18$OnlineDataProvided))
 ```
 
-```
-## 
-## FALSE  TRUE 
-##    67   161
-```
 
-How many articles contained Matlab programs?
+
+Var1    Freq
+-----  -----
+No        50
+Yes      189
+
+If the data is not provided, why not?
 
 ```r
-table(str_detect(results_entry.summer18$ProgramFormat,"Matlab"))
-```
-
-```
-## 
-## FALSE  TRUE 
-##   153    75
+kable(results_entry.summer18 %>% mutate(lDataAbsence = nchar(DataAbsence)) %>% filter(!is.na(DataAbsence)) %>% select(c("DataAbsence", "DOI")) %>% unnest_tokens(DataAbsence_all,DataAbsence, token= stringr::str_split, pattern = ", ") %>% count(DataAbsence_all) %>% arrange(desc(n)) %>% head(10))
 ```
 
 
+
+DataAbsence_all                                                                             n
+----------------------------------------------------------------------------------------  ---
+confidential data                                                                          23
+proprietary data                                                                           14
+redistribution not authorized                                                               5
+missing data (no justification)                                                             4
+other data download site provided                                                           4
+licensed data                                                                               3
+additional data sets are not necessary                                                      1
+and is not allowed to be transferred to outside computers due to data security concerns     1
+and while the information is available online                                               1
+article runs simulations with chosen parameters                                             1
+
+Are the data accessible only to the authors? Instructions were to answer "yes" if the authors clearly stated that the data are only available to them, and "no" if there is clear evidence that others can access to the data, albeit with restrictions. "DK" was answered in case of doubt.
+
+
+```r
+kable(table(results_entry.summer18$DataAvailabilityExclusive))
+```
+
+
+
+Var1    Freq
+-----  -----
+DK         9
+No        37
+Yes        1
+
+Information was collected for up to two datasets, classified into whether they were "Analysis data" or "Input data". The definition given was:
+
+```
+It is useful to distinguish between two types of data:
+
+1. INPUT DATA: The "underlying source data" as collected by the authors or other agency (eg. the CPS or "my survey" data). This data is used to construct the final analysis data set.
+
+2. ANALYSIS DATA: The post-processed or "cleaned" data set(s) that are direct inputs into the final programs to produce the results reported in the article.
+
+The basic research workflow is as follows:  INPUT DATA -> [preparation programs] -> ANALYSIS DATA -> [regression programs] -> results.
+
+[Comment: Authors will usually only supply the analysis data set. The analysis data set is often constructed from numerous sources, which can sometimes be described within the article itself or in an online appendix.]
+```
+Most articles only described a single dataset:
+
+```r
+kable(table(results_entry.summer18$DataSetClassification1))
+```
+
+
+
+Var1             Freq
+--------------  -----
+Analysis Data     114
+Don't Know         27
+Input Data         45
+In the few cases where a second dataset is described, it tends to be a Analysis data set:
+
+
+```r
+kable(table(results_entry.summer18$DataSetClassification2))
+```
+
+
+
+Var1             Freq
+--------------  -----
+Analysis Data      14
+Input Data          7
+
+```r
+kable(with(results_entry.summer18 , table(DataSetClassification2, DataSetClassification1)))
+```
+
+                 Analysis Data   Don't Know   Input Data
+--------------  --------------  -----------  -----------
+Analysis Data                6            0            8
+Input Data                   3            0            4

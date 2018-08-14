@@ -61,17 +61,58 @@ results_exit.summer18 <- subset(results_exit,Date > "2018-06-01")
 ## Results
 Does the article provide computer programs/code?
 ```{r}
-table(results_entry.summer18$Programs)
+kable(table(results_entry.summer18$Programs))
+```
+How many articles contained Stata, Matlab, etc. programs? Note that many archives use multiple tools, so the (full) table wouldn't add up to the count of articles.
+```{r}
 # This is better done with TextMining programs
+# requires the tidytext stuff
+data("stop_words")
+words <- results_entry.summer18 %>% 
+  select(c("ProgramFormat", "DOI")) %>% 
+  unnest_tokens(ProgramFormat_all,ProgramFormat) %>%
+  anti_join(stop_words,by = c("ProgramFormat_all" = "word")) %>%
+  count(ProgramFormat_all) %>% 
+  arrange(desc(n))
+kable(words)
 ```
-How many articles contained Stata programs?
+
+How about datasets? How many articles provide at least some data?
 ```{r}
-table(str_detect(results_entry.summer18$ProgramFormat,"Stata"))
+kable(table(results_entry.summer18$OnlineDataProvided))
 ```
 
-How many articles contained Matlab programs?
+If the data is not provided, why not?
 ```{r}
-table(str_detect(results_entry.summer18$ProgramFormat,"Matlab"))
+kable(results_entry.summer18 %>% mutate(lDataAbsence = nchar(DataAbsence)) %>% filter(!is.na(DataAbsence)) %>% select(c("DataAbsence", "DOI")) %>% unnest_tokens(DataAbsence_all,DataAbsence, token= stringr::str_split, pattern = ", ") %>% count(DataAbsence_all) %>% arrange(desc(n)) %>% head(10))
 ```
 
+Are the data accessible only to the authors? Instructions were to answer "yes" if the authors clearly stated that the data are only available to them, and "no" if there is clear evidence that others can access to the data, albeit with restrictions. "DK" was answered in case of doubt.
 
+```{r}
+kable(table(results_entry.summer18$DataAvailabilityExclusive))
+```
+
+Information was collected for up to two datasets, classified into whether they were "Analysis data" or "Input data". The definition given was:
+
+```
+It is useful to distinguish between two types of data:
+
+1. INPUT DATA: The "underlying source data" as collected by the authors or other agency (eg. the CPS or "my survey" data). This data is used to construct the final analysis data set.
+
+2. ANALYSIS DATA: The post-processed or "cleaned" data set(s) that are direct inputs into the final programs to produce the results reported in the article.
+
+The basic research workflow is as follows:  INPUT DATA -> [preparation programs] -> ANALYSIS DATA -> [regression programs] -> results.
+
+[Comment: Authors will usually only supply the analysis data set. The analysis data set is often constructed from numerous sources, which can sometimes be described within the article itself or in an online appendix.]
+```
+Most articles only described a single dataset:
+```{r}
+kable(table(results_entry.summer18$DataSetClassification1))
+```
+In the few cases where a second dataset is described, it tends to be a Analysis data set:
+
+```{r}
+kable(table(results_entry.summer18$DataSetClassification2))
+kable(with(results_entry.summer18 , table(DataSetClassification2, DataSetClassification1)))
+```
