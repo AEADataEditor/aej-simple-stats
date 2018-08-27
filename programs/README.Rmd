@@ -6,8 +6,6 @@ output:
   html_document: 
     keep_md: yes
     number_sections: yes
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -19,100 +17,42 @@ This directory contains all programs necessary to run the cleaning, analysis, et
 ## Setup
 Most parameters are set in the `config.R`:
 ```{r setup_config}
-source("config.R", echo=FALSE)
+source("config.R", echo=TRUE)
 ```
 
 Any libraries needed are called and if necessary installed through `libraries.R`:
 
-```{r setup_libraries,echo=TRUE}
-suppressMessages(source("libraries.R", echo=FALSE))
+```{r setup_libraries}
+source("libraries.R", echo=TRUE)
 ```
 
 
 
 ## Download the replication data from Google Sheet
 The responses to the replication attempts are stored on Google Sheets. 
-```{r download_replication,cache=TRUE}
+```{r download_replication,eval=FALSE}
 source("01_download_replication.R",echo=TRUE)
 ```
 
-## Clean the data
-Are there duplicate DOIs? There are `r anyDuplicated(results_exit_raw$DOI)` duplicates in the Exit Questionnaire, we remove them.
-```{r cleaning}
-# For now, we keep the later one
-results_exit <- results_exit_raw %>% 
-  arrange(desc(Timestamp)) %>% 
-  distinct(DOI,.keep_all=TRUE) %>%
-  separate(Timestamp,c("Date_char","Time_char"),sep=" ",remove=TRUE)
-results_entry <- results_entry_raw %>% 
-  arrange(desc(Timestamp)) %>% 
-  distinct(DOI,.keep_all=TRUE) %>%
-  separate(Timestamp,c("Date_char","Time_char"),sep=" ",remove=TRUE)
-results_entry$Date <- as.Date(results_entry$Date_char,"%m/%d/%Y")
-results_exit$Date <- as.Date(results_exit$Date_char,"%m/%d/%Y")
-```
-We're going to restrict it to our 2018 summer team:
-```{r summer18}
-summer18 <- as.vector(unique(subset(results_entry,Date > "2018-06-01")$NetID))
-results_entry.summer18 <- subset(results_entry,Date > "2018-06-01")
-results_exit.summer18 <- subset(results_exit,Date > "2018-06-01")
+## Download the h-index data
+The h-index data is manually compiled and stored on Google Sheets. This downloads those files. For instructions, see the h-index data directory. 
+```{r download_h,eval=FALSE}
+source("02_download_h-index.R", echo=TRUE)
 ```
 
-## Results
-Does the article provide computer programs/code?
-```{r}
-kable(table(results_entry.summer18$Programs))
-```
-How many articles contained Stata, Matlab, etc. programs? Note that many archives use multiple tools, so the (full) table wouldn't add up to the count of articles.
-```{r}
-# This is better done with TextMining programs
-# requires the tidytext stuff
-data("stop_words")
-words <- results_entry.summer18 %>% 
-  select(c("ProgramFormat", "DOI")) %>% 
-  unnest_tokens(ProgramFormat_all,ProgramFormat) %>%
-  anti_join(stop_words,by = c("ProgramFormat_all" = "word")) %>%
-  count(ProgramFormat_all) %>% 
-  arrange(desc(n))
-kable(words)
+## Preparing and cleaning data
+Both the h-index data and the replication data have some inconsistencies that need to be addressed.
+```{r prep-h-index}
+source("03_prep-h-index.R", echo=TRUE)
 ```
 
-How about datasets? How many articles provide at least some data?
-```{r}
-kable(table(results_entry.summer18$OnlineDataProvided))
+```{r clean_data} 
+source("04_clean_data.R", echo=TRUE)
 ```
 
-If the data is not provided, why not?
-```{r}
-kable(results_entry.summer18 %>% mutate(lDataAbsence = nchar(DataAbsence)) %>% filter(!is.na(DataAbsence)) %>% select(c("DataAbsence", "DOI")) %>% unnest_tokens(DataAbsence_all,DataAbsence, token= stringr::str_split, pattern = ", ") %>% count(DataAbsence_all) %>% arrange(desc(n)) %>% head(10))
-```
+## Core analysis and figures
+The final program produces the tables and figures. 
 
-Are the data accessible only to the authors? Instructions were to answer "yes" if the authors clearly stated that the data are only available to them, and "no" if there is clear evidence that others can access to the data, albeit with restrictions. "DK" was answered in case of doubt.
-
-```{r}
-kable(table(results_entry.summer18$DataAvailabilityExclusive))
-```
-
-Information was collected for up to two datasets, classified into whether they were "Analysis data" or "Input data". The definition given was:
-
-```
-It is useful to distinguish between two types of data:
-
-1. INPUT DATA: The "underlying source data" as collected by the authors or other agency (eg. the CPS or "my survey" data). This data is used to construct the final analysis data set.
-
-2. ANALYSIS DATA: The post-processed or "cleaned" data set(s) that are direct inputs into the final programs to produce the results reported in the article.
-
-The basic research workflow is as follows:  INPUT DATA -> [preparation programs] -> ANALYSIS DATA -> [regression programs] -> results.
-
-[Comment: Authors will usually only supply the analysis data set. The analysis data set is often constructed from numerous sources, which can sometimes be described within the article itself or in an online appendix.]
-```
-Most articles only described a single dataset:
-```{r}
-kable(table(results_entry.summer18$DataSetClassification1))
-```
-In the few cases where a second dataset is described, it tends to be a Analysis data set:
-
-```{r}
-kable(table(results_entry.summer18$DataSetClassification2))
-kable(with(results_entry.summer18 , table(DataSetClassification2, DataSetClassification1)))
+```{r analytics}
+source("05_analytics.R",echo = TRUE)
 ```
