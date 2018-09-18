@@ -36,6 +36,11 @@ RepList2018a <- "Replication_List - Spring2018.csv"
 HindexRaw <- "h-index-assignment1.csv"
 HindexClean <- "hindex.csv"
 
+# Google doc links
+## Entry 
+entry_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRH0b88STOlUo61JLObuauMY6mltA75l_IRxBDOo0Ap1yjFxTvg56Bwkiq69Oc1dQZfgIB5IfegQLoR/pub?output=csv"
+exit_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb1iY-O_M_e0MY2UDgJbyglTgtlNrz8GpfasVAq7ej6CpwY95vdn25VcI-XvruUfWOD3ePLxwhv4JT/pub?output=csv"
+
 
 
 
