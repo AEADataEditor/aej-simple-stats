@@ -38,9 +38,10 @@ HindexClean <- "hindex.csv"
 
 # Google doc links
 ## Entry 
-entry_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRH0b88STOlUo61JLObuauMY6mltA75l_IRxBDOo0Ap1yjFxTvg56Bwkiq69Oc1dQZfgIB5IfegQLoR/pub?output=csv"
-exit_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb1iY-O_M_e0MY2UDgJbyglTgtlNrz8GpfasVAq7ej6CpwY95vdn25VcI-XvruUfWOD3ePLxwhv4JT/pub?output=csv"
-
+#entry_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRH0b88STOlUo61JLObuauMY6mltA75l_IRxBDOo0Ap1yjFxTvg56Bwkiq69Oc1dQZfgIB5IfegQLoR/pub?output=csv"
+#exit_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb1iY-O_M_e0MY2UDgJbyglTgtlNrz8GpfasVAq7ej6CpwY95vdn25VcI-XvruUfWOD3ePLxwhv4JT/pub?output=csv"
+entry_KEY <- "1KTXJexhuDv9NwhuUqTLLg8Q3mCFhQ0YuVsg2W305OjU"
+exit_KEY <- "1pVvrX5MJbEiVyvtMl6kJ_QvGbq6btO36B0vw8n2PnYs"
 
 
 

@@ -1,0 +1,6 @@
+
+programs/.Rhistory
+*.aux
+*.log
+*.out
+*.gz
