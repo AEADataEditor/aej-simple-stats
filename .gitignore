@@ -1,6 +1,7 @@
-
 programs/.Rhistory
 *.aux
 *.log
 *.out
 *.gz
+.Rproj.user
+.Rhistory

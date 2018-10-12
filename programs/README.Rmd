@@ -17,42 +17,43 @@ This directory contains all programs necessary to run the cleaning, analysis, et
 ## Setup
 Most parameters are set in the `config.R`:
 ```{r setup_config}
-source("config.R", echo=TRUE)
+source("../pathconfig.R",echo=TRUE)
+source(file.path(programs,"config.R"), echo=TRUE)
 ```
 
 Any libraries needed are called and if necessary installed through `libraries.R`:
 
 ```{r setup_libraries}
-source("libraries.R", echo=TRUE)
+source(file.path(programs,"libraries.R"), echo=TRUE)
 ```
 
 
 
 ## Download the replication data from Google Sheet
 The responses to the replication attempts are stored on Google Sheets. 
-```{r download_replication,eval=FALSE}
-source("01_download_replication.R",echo=TRUE)
+```{r download_replication}
+source(file.path(programs,"01_download_replication.R"),echo=TRUE)
 ```
 
 ## Download the h-index data
 The h-index data is manually compiled and stored on Google Sheets. This downloads those files. For instructions, see the h-index data directory. 
 ```{r download_h,eval=FALSE}
-source("02_download_h-index.R", echo=TRUE)
+source(file.path(programs,"02_download_h-index.R"), echo=TRUE)
 ```
 
 ## Preparing and cleaning data
 Both the h-index data and the replication data have some inconsistencies that need to be addressed.
-```{r prep-h-index}
-source("03_prep-h-index.R", echo=TRUE)
+```{r prep-h-index,eval=FALSE}
+source(file.path(programs,"03_prep-h-index.R"), echo=TRUE)
 ```
 
-```{r clean_data} 
-source("04_clean_data.R", echo=TRUE)
+```{r clean_data,eval=FALSE} 
+source(file.path(programs,"04_clean_data.R"), echo=TRUE)
 ```
 
 ## Core analysis and figures
 The final program produces the tables and figures. 
 
-```{r analytics}
-source("05_analytics.R",echo = TRUE)
+```{r analytics,eval=FALSE}
+source(file.path(programs,"05_analytics.R"),echo = TRUE)
 ```
