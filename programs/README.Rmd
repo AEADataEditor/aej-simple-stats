@@ -17,13 +17,14 @@ This directory contains all programs necessary to run the cleaning, analysis, et
 ## Setup
 Most parameters are set in the `config.R`:
 ```{r setup_config}
-source("../pathconfig.R",echo=TRUE)
+source(file.path(rprojroot::find_rstudio_root_file(),"pathconfig.R"),echo=TRUE)
 source(file.path(programs,"config.R"), echo=TRUE)
 ```
 
 Any libraries needed are called and if necessary installed through `libraries.R`:
 
 ```{r setup_libraries}
+source(file.path(basepath,"global-libraries.R"),echo=TRUE)
 source(file.path(programs,"libraries.R"), echo=TRUE)
 ```
 
@@ -31,9 +32,26 @@ source(file.path(programs,"libraries.R"), echo=TRUE)
 
 ## Download the replication data from Google Sheet
 The responses to the replication attempts are stored on Google Sheets. 
-```{r download_replication}
+```{r download_replication,eval=FALSE}
 source(file.path(programs,"01_download_replication.R"),echo=TRUE)
 ```
+
+## Read-in the local versions
+The master replication list has various inconsistencies. We clean it up, and look up the DOI at CrossRef.
+```{r read_replication}
+source(file.path(programs,"02_clean_replicationlist.R"),echo=TRUE)
+```
+We can now tabulate the replications listed (not run) by journal and year:
+```{r list_journals,results='asis'}
+knitr::kable(repllist3 %>% group_by(journal,year) %>% filter(!is.na(journal)) %>% summarize(n=n()) %>% spread(year,n))
+```
+
+
+
+
+
+
+
 
 ## Download the h-index data
 The h-index data is manually compiled and stored on Google Sheets. This downloads those files. For instructions, see the h-index data directory. 

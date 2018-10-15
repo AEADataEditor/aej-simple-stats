@@ -28,7 +28,7 @@ HindexClean <- "hindex.csv"
 #exit_URL <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRb1iY-O_M_e0MY2UDgJbyglTgtlNrz8GpfasVAq7ej6CpwY95vdn25VcI-XvruUfWOD3ePLxwhv4JT/pub?output=csv"
 entry_KEY <- "1KTXJexhuDv9NwhuUqTLLg8Q3mCFhQ0YuVsg2W305OjU"
 exit_KEY <- "1pVvrX5MJbEiVyvtMl6kJ_QvGbq6btO36B0vw8n2PnYs"
-
+replication_list_KEY <- "1pLxxyg01L-UkNpBWgP2xCRe7hIuUNw6e9BnVIqcO76c"
 
 
 

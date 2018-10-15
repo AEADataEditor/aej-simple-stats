@@ -5,3 +5,4 @@ programs/.Rhistory
 *.gz
 .Rproj.user
 .Rhistory
+.httr-oauth
