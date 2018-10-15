@@ -48,7 +48,7 @@ repllist2 <- repllist %>%
 			 `Expected Difficulty`,Replicator,Completed,Replicated,
 			 `2nd Replicator`,Completed_1,Replicated_1,
 			 `Data Type`,`Data Access Type`,`Data URL`,`Data Contact`,
-			 `Start-time`,`End-time`,
+			 `Start-time`,`End-time`,`Main Issue`,
 			 `Data Access Type: restricted`,`Data Access Type: public`,`Data Access Type: Unknown`) 
 	
 # There are three typos as of 2018-10-15 which we fix here
@@ -74,5 +74,5 @@ names(bibinfo.df)[1] <- "DOI"
 # merge back onto repllist2
 
 repllist3 <- left_join(repllist2,bibinfo.df,by="DOI")
-saveRDS(repllist3,file=file.path(interwrk,"replication_list_clean.Rds"))
+saveRDS(repllist3,file=file.path(interwrk,"replication_list_3.Rds"))
 
