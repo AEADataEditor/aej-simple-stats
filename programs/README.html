@@ -135,11 +135,13 @@ $(document).ready(function () {
 <div id="setup" class="section level2">
 <h2><span class="header-section-number">1.1</span> Setup</h2>
 <p>Most parameters are set in the <code>config.R</code>:</p>
-<pre class="r"><code>source(&quot;../pathconfig.R&quot;,echo=TRUE)</code></pre>
+<pre class="r"><code>source(file.path(rprojroot::find_rstudio_root_file(),&quot;pathconfig.R&quot;),echo=TRUE)</code></pre>
 <pre><code>## 
-## &gt; basepath &lt;- &quot;..&quot;
+## &gt; basepath &lt;- rprojroot::find_rstudio_root_file()
 ## 
 ## &gt; dataloc &lt;- file.path(basepath, &quot;data&quot;, &quot;replication_data&quot;)
+## 
+## &gt; interwrk &lt;- file.path(basepath, &quot;data&quot;, &quot;interwrk&quot;)
 ## 
 ## &gt; hindexloc &lt;- file.path(basepath, &quot;data&quot;, &quot;h_index_data&quot;)
 ## 
@@ -147,7 +149,14 @@ $(document).ready(function () {
 ## 
 ## &gt; Outputs &lt;- file.path(basepath, &quot;analysis&quot;)
 ## 
-## &gt; programs &lt;- file.path(basepath, &quot;programs&quot;)</code></pre>
+## &gt; programs &lt;- file.path(basepath, &quot;programs&quot;)
+## 
+## &gt; for (dir in list(dataloc, interwrk, hindexloc, TexIncludes, 
+## +     Outputs)) {
+## +     if (file.exists(dir)) {
+## +     }
+## +     else {
+## +         dir.crea .... [TRUNCATED]</code></pre>
 <pre class="r"><code>source(file.path(programs,&quot;config.R&quot;), echo=TRUE)</code></pre>
 <pre><code>## 
 ## &gt; ExitQ &lt;- &quot;Exit_Questionnaire_Draft (Responses) - Form Responses 1.csv&quot;
@@ -176,90 +185,370 @@ $(document).ready(function () {
 ## 
 ## &gt; entry_KEY &lt;- &quot;1KTXJexhuDv9NwhuUqTLLg8Q3mCFhQ0YuVsg2W305OjU&quot;
 ## 
-## &gt; exit_KEY &lt;- &quot;1pVvrX5MJbEiVyvtMl6kJ_QvGbq6btO36B0vw8n2PnYs&quot;</code></pre>
+## &gt; exit_KEY &lt;- &quot;1pVvrX5MJbEiVyvtMl6kJ_QvGbq6btO36B0vw8n2PnYs&quot;
+## 
+## &gt; replication_list_KEY &lt;- &quot;1pLxxyg01L-UkNpBWgP2xCRe7hIuUNw6e9BnVIqcO76c&quot;</code></pre>
 <p>Any libraries needed are called and if necessary installed through <code>libraries.R</code>:</p>
-<pre class="r"><code>source(file.path(programs,&quot;libraries.R&quot;), echo=TRUE)</code></pre>
+<pre class="r"><code>source(file.path(basepath,&quot;global-libraries.R&quot;),echo=TRUE)</code></pre>
 <pre><code>## 
 ## &gt; pkgTest &lt;- function(x) {
 ## +     if (!require(x, character.only = TRUE)) {
 ## +         install.packages(x, dep = TRUE)
 ## +         if (!require(x, charact .... [TRUNCATED] 
 ## 
-## &gt; libraries &lt;- c(&quot;plyr&quot;, &quot;reshape2&quot;, &quot;data.table&quot;, &quot;dplyr&quot;, 
-## +     &quot;magrittr&quot;, &quot;stargazer&quot;, &quot;ggplot2&quot;, &quot;RefManageR&quot;, &quot;devtools&quot;, 
-## +     &quot;bibtex&quot;, &quot;kni ...&quot; ... [TRUNCATED] 
+## &gt; global.libraries &lt;- c(&quot;dplyr&quot;, &quot;devtools&quot;, &quot;rprojroot&quot;, 
+## +     &quot;tictoc&quot;)
 ## 
-## &gt; results &lt;- sapply(as.list(libraries), pkgTest)</code></pre>
-<pre><code>## Loading required package: plyr</code></pre>
-<pre><code>## Loading required package: reshape2</code></pre>
-<pre><code>## Loading required package: data.table</code></pre>
-<pre><code>## 
-## Attaching package: 'data.table'</code></pre>
-<pre><code>## The following objects are masked from 'package:reshape2':
-## 
-##     dcast, melt</code></pre>
+## &gt; results &lt;- sapply(as.list(global.libraries), pkgTest)</code></pre>
 <pre><code>## Loading required package: dplyr</code></pre>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:data.table':
-## 
-##     between, first, last</code></pre>
-<pre><code>## The following objects are masked from 'package:plyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
 ## 
 ##     filter, lag</code></pre>
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre><code>## Loading required package: magrittr</code></pre>
-<pre><code>## Loading required package: stargazer</code></pre>
-<pre><code>## 
-## Please cite as:</code></pre>
-<pre><code>##  Hlavac, Marek (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
-<pre><code>##  R package version 5.2.2. https://CRAN.R-project.org/package=stargazer</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## Loading required package: RefManageR</code></pre>
 <pre><code>## Loading required package: devtools</code></pre>
-<pre><code>## Loading required package: bibtex</code></pre>
-<pre><code>## Loading required package: knitcitations</code></pre>
+<pre><code>## Loading required package: rprojroot</code></pre>
+<pre><code>## Loading required package: tictoc</code></pre>
+<pre class="r"><code>source(file.path(programs,&quot;libraries.R&quot;), echo=TRUE)</code></pre>
+<pre><code>## 
+## &gt; libraries &lt;- c(&quot;dplyr&quot;, &quot;devtools&quot;, &quot;googlesheets&quot;, 
+## +     &quot;rcrossref&quot;, &quot;readr&quot;, &quot;tidyr&quot;)
+## 
+## &gt; results &lt;- sapply(as.list(libraries), pkgTest)</code></pre>
 <pre><code>## Loading required package: googlesheets</code></pre>
+<pre><code>## Loading required package: rcrossref</code></pre>
+<pre><code>## Loading required package: readr</code></pre>
+<pre><code>## Loading required package: tidyr</code></pre>
 <pre><code>## 
 ## &gt; cbind(libraries, results)
-##       libraries       results
-##  [1,] &quot;plyr&quot;          &quot;OK&quot;   
-##  [2,] &quot;reshape2&quot;      &quot;OK&quot;   
-##  [3,] &quot;data.table&quot;    &quot;OK&quot;   
-##  [4,] &quot;dplyr&quot;         &quot;OK&quot;   
-##  [5,] &quot;magrittr&quot;      &quot;OK&quot;   
-##  [6,] &quot;stargazer&quot;     &quot;OK&quot;   
-##  [7,] &quot;ggplot2&quot;       &quot;OK&quot;   
-##  [8,] &quot;RefManageR&quot;    &quot;OK&quot;   
-##  [9,] &quot;devtools&quot;      &quot;OK&quot;   
-## [10,] &quot;bibtex&quot;        &quot;OK&quot;   
-## [11,] &quot;knitcitations&quot; &quot;OK&quot;   
-## [12,] &quot;googlesheets&quot;  &quot;OK&quot;</code></pre>
+##      libraries      results
+## [1,] &quot;dplyr&quot;        &quot;OK&quot;   
+## [2,] &quot;devtools&quot;     &quot;OK&quot;   
+## [3,] &quot;googlesheets&quot; &quot;OK&quot;   
+## [4,] &quot;rcrossref&quot;    &quot;OK&quot;   
+## [5,] &quot;readr&quot;        &quot;OK&quot;   
+## [6,] &quot;tidyr&quot;        &quot;OK&quot;</code></pre>
 </div>
 <div id="download-the-replication-data-from-google-sheet" class="section level2">
 <h2><span class="header-section-number">1.2</span> Download the replication data from Google Sheet</h2>
 <p>The responses to the replication attempts are stored on Google Sheets.</p>
 <pre class="r"><code>source(file.path(programs,&quot;01_download_replication.R&quot;),echo=TRUE)</code></pre>
 </div>
-<div id="download-the-h-index-data" class="section level2">
-<h2><span class="header-section-number">1.3</span> Download the h-index data</h2>
-<p>The h-index data is manually compiled and stored on Google Sheets. This downloads those files. For instructions, see the h-index data directory.</p>
-<pre class="r"><code>source(file.path(programs,&quot;02_download_h-index.R&quot;), echo=TRUE)</code></pre>
-</div>
-<div id="preparing-and-cleaning-data" class="section level2">
-<h2><span class="header-section-number">1.4</span> Preparing and cleaning data</h2>
-<p>Both the h-index data and the replication data have some inconsistencies that need to be addressed.</p>
-<pre class="r"><code>source(file.path(programs,&quot;03_prep-h-index.R&quot;), echo=TRUE)</code></pre>
-<pre class="r"><code>source(file.path(programs,&quot;04_clean_data.R&quot;), echo=TRUE)</code></pre>
+<div id="get-crossref-information" class="section level2">
+<h2><span class="header-section-number">1.3</span> Get CrossRef information</h2>
+<p>The master replication list has all the DOIs. We clean that up first, and then look up the DOI at CrossRef.</p>
+<pre class="r"><code>source(file.path(programs,&quot;02_read_clean_replicationlist.R&quot;),echo=TRUE)</code></pre>
+<pre><code>## 
+## &gt; ws &lt;- readRDS(file = file.path(dataloc, &quot;mapping_ws_nums.Rds&quot;))
+## 
+## &gt; ws$date
+## [1] &quot;2018-10-15&quot;
+## 
+## &gt; ws &lt;- as.vector(unlist(ws[1:length(ws) - 1]))
+## 
+## &gt; repllist &lt;- NA
+## 
+## &gt; for (x in 1:length(ws)) {
+## +     if (ws[x] != &quot;2009 missing online material&quot;) {
+## +         print(paste(&quot;Processing&quot;, ws[x]))
+## +         if (x == 1) {
+## + .... [TRUNCATED] 
+## [1] &quot;Processing MASTER Summer 2018 forward&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]</code></pre>
+<pre><code>## [1] &quot;Processing Spring2018AER&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]</code></pre>
+<pre><code>## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Spring2018&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing First2014&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing First2015&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Second2015&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Spring2016&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Summer2016&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Summer2017&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Spring2017&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing AEJApp2012&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## [1] &quot;Processing Spring2016 list&quot;</code></pre>
+<pre><code>## Warning: Missing column names filled in: 'X1' [1]
+
+## Warning: The following named parsers don't match the column names: Volume,
+## Issue</code></pre>
+<pre><code>## 
+## &gt; repllist2 &lt;- repllist %&gt;% mutate(DOI = ifelse(DOI == 
+## +     &quot;10.1257/aer.2013047&quot;, &quot;10.1257/aer.20130479&quot;, DOI)) %&gt;% 
+## +     mutate(DOI = ifelse(DOI  .... [TRUNCATED] 
+## 
+## &gt; saveRDS(repllist2, file = file.path(interwrk, &quot;replication_list_2.Rds&quot;))</code></pre>
+<pre class="r"><code>source(file.path(programs,&quot;03_get_crossref.R&quot;),echo=TRUE)</code></pre>
+<pre class="r"><code>source(file.path(programs,&quot;04_clean_replicationlist.R&quot;),echo=TRUE)</code></pre>
+<pre><code>## 
+## &gt; repllist2 &lt;- readRDS(file = file.path(interwrk, &quot;replication_list_2.Rds&quot;)) %&gt;% 
+## +     select(DOI, `Entry Questionnaire`, `Entry Questionnaire Author .... [TRUNCATED] 
+## 
+## &gt; bibinfo.df &lt;- readRDS(file = file.path(interwrk, &quot;crossref_info.Rds&quot;))
+## 
+## &gt; repllist3 &lt;- left_join(repllist2, bibinfo.df, by = &quot;DOI&quot;)
+## 
+## &gt; saveRDS(repllist3, file = file.path(interwrk, &quot;replication_list_3.Rds&quot;))
+## 
+## &gt; table(repllist3$Replicated)
+## 
+##                                   Mostly 
+##                                        6 
+##                                       no 
+##                                       11 
+##                                       No 
+##                                      284 
+##                                  Partial 
+##                                      118 
+##                                partially 
+##                                       14 
+##                                Partially 
+##                                       13 
+##                                   Partly 
+##                                        1 
+##                                        Y 
+##                                        1 
+##                                      yes 
+##                                        8 
+##                                      Yes 
+##                                      120 
+## Yes(?) Table 3 still unable to replicate 
+##                                        1 
+## 
+## &gt; val.partial &lt;- c(&quot;partial&quot;, &quot;partially&quot;, &quot;partly&quot;, 
+## +     &quot;yes(?) table 3 still unable to replicate&quot;, &quot;mostly&quot;)
+## 
+## &gt; val.yes &lt;- c(&quot;yes&quot;, &quot;y&quot;)
+## 
+## &gt; repllist4 &lt;- repllist3 %&gt;% mutate(replicated_clean = ifelse(tolower(Replicated) %in% 
+## +     val.partial, &quot;partially&quot;, ifelse(tolower(Replicated) %in .... [TRUNCATED] 
+## 
+## &gt; saveRDS(repllist4, file = file.path(interwrk, &quot;replication_list_clean.Rds&quot;))</code></pre>
 </div>
 <div id="core-analysis-and-figures" class="section level2">
-<h2><span class="header-section-number">1.5</span> Core analysis and figures</h2>
+<h2><span class="header-section-number">1.4</span> Core analysis and figures</h2>
+<p>We can now tabulate the replications listed (not run) by journal and year:</p>
+<pre class="r"><code>repllist4 &lt;- readRDS(file=file.path(interwrk,&quot;replication_list_clean.Rds&quot;))
+table1 &lt;- repllist4 %&gt;% group_by(journal,year) %&gt;% filter(!is.na(journal)) %&gt;% summarize(n=n()) %&gt;% spread(year,n)
+write.csv(table1,file.path(TexIncludes,&quot;journal_by_year.csv&quot;))
+knitr::kable(table1)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">journal</th>
+<th align="right">2009</th>
+<th align="right">2010</th>
+<th align="right">2011</th>
+<th align="right">2012</th>
+<th align="right">2013</th>
+<th align="right">2014</th>
+<th align="right">2015</th>
+<th align="right">2016</th>
+<th align="right">2017</th>
+<th align="right">2018</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">American Economic Journal: Applied Economics</td>
+<td align="right">39</td>
+<td align="right">50</td>
+<td align="right">54</td>
+<td align="right">127</td>
+<td align="right">57</td>
+<td align="right">45</td>
+<td align="right">35</td>
+<td align="right">37</td>
+<td align="right">42</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">American Economic Journal: Macroeconomics</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">30</td>
+<td align="right">29</td>
+<td align="right">31</td>
+<td align="right">35</td>
+<td align="right">30</td>
+<td align="right">32</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">American Economic Journal: Microeconomics</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">44</td>
+<td align="right">48</td>
+<td align="right">43</td>
+<td align="right">43</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">American Economic Review</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">121</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">We also tabulate the replication results. Note</td>
+<td align="right">that th</td>
+<td align="right">is is a</td>
+<td align="right">noisy</td>
+<td align="right">measure</td>
+<td align="right">: in so</td>
+<td align="right">me case</td>
+<td align="right">s, when</td>
+<td align="right">only a</td>
+<td align="right">n asses</td>
+<td align="right">sment was made, replication was set to “no”, which is incorrect.</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>table2 &lt;- repllist4 %&gt;% group_by(journal,replicated_clean) %&gt;% filter(!is.na(journal)) %&gt;% summarize(n=n()) %&gt;% spread(replicated_clean,n)
+# the last entry is for NA
+names(table2)[length(names(table2))] &lt;- &quot;NA&quot;
+write.csv(table2,file.path(TexIncludes,&quot;journal_by_replicated.csv&quot;))
+knitr::kable(table2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">journal</th>
+<th align="right">no</th>
+<th align="right">partially</th>
+<th align="right">yes</th>
+<th align="right">NA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">American Economic Journal: Applied Economics</td>
+<td align="right">195</td>
+<td align="right">118</td>
+<td align="right">111</td>
+<td align="right">82</td>
+</tr>
+<tr class="even">
+<td align="left">American Economic Journal: Macroeconomics</td>
+<td align="right">37</td>
+<td align="right">35</td>
+<td align="right">17</td>
+<td align="right">98</td>
+</tr>
+<tr class="odd">
+<td align="left">American Economic Journal: Microeconomics</td>
+<td align="right">63</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">115</td>
+</tr>
+<tr class="even">
+<td align="left">American Economic Review</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">1</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">Some quality diagnostics:</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>knitr::kable(repllist4 %&gt;% mutate(flag_issue = as.numeric(is.na(`Main Issue`))) %&gt;% filter(!is.na(journal)) %&gt;%  group_by(flag_issue,replicated_clean) %&gt;% summarise(n=n())  %&gt;% spread(flag_issue,n),caption = &quot;Presence of notes (Main Issue)&quot;)</code></pre>
+<table>
+<caption>Presence of notes (Main Issue)</caption>
+<thead>
+<tr class="header">
+<th align="left">replicated_clean</th>
+<th align="right">0</th>
+<th align="right">1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">no</td>
+<td align="right">286</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">partially</td>
+<td align="right">97</td>
+<td align="right">56</td>
+</tr>
+<tr class="odd">
+<td align="left">yes</td>
+<td align="right">51</td>
+<td align="right">78</td>
+</tr>
+<tr class="even">
+<td align="left">NA</td>
+<td align="right">47</td>
+<td align="right">368</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="replicators" class="section level2">
+<h2><span class="header-section-number">1.5</span> Replicators</h2>
+<p>Overall, there were 51 Replicators.</p>
+</div>
+<div id="not-run-yet" class="section level2">
+<h2><span class="header-section-number">1.6</span> NOT RUN YET</h2>
 <p>The final program produces the tables and figures.</p>
 <pre class="r"><code>source(file.path(programs,&quot;05_analytics.R&quot;),echo = TRUE)</code></pre>
 </div>

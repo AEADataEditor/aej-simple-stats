@@ -36,40 +36,57 @@ The responses to the replication attempts are stored on Google Sheets.
 source(file.path(programs,"01_download_replication.R"),echo=TRUE)
 ```
 
-## Read-in the local versions
-The master replication list has various inconsistencies. We clean it up, and look up the DOI at CrossRef.
-```{r read_replication}
-source(file.path(programs,"02_clean_replicationlist.R"),echo=TRUE)
-```
-We can now tabulate the replications listed (not run) by journal and year:
-```{r list_journals,results='asis'}
-knitr::kable(repllist3 %>% group_by(journal,year) %>% filter(!is.na(journal)) %>% summarize(n=n()) %>% spread(year,n))
+## Get CrossRef information
+The master replication list has all the DOIs. We clean that up first, and then  look up the DOI at CrossRef.
+```{r read_clean_list,cache=TRUE}
+source(file.path(programs,"02_read_clean_replicationlist.R"),echo=TRUE)
 ```
 
-
-
-
-
-
-
-
-## Download the h-index data
-The h-index data is manually compiled and stored on Google Sheets. This downloads those files. For instructions, see the h-index data directory. 
-```{r download_h,eval=FALSE}
-source(file.path(programs,"02_download_h-index.R"), echo=TRUE)
+```{r get_crossref,cache=TRUE,eval=FALSE}
+source(file.path(programs,"03_get_crossref.R"),echo=TRUE)
 ```
 
-## Preparing and cleaning data
-Both the h-index data and the replication data have some inconsistencies that need to be addressed.
-```{r prep-h-index,eval=FALSE}
-source(file.path(programs,"03_prep-h-index.R"), echo=TRUE)
+```{r clean_replication,cache=TRUE}
+source(file.path(programs,"04_clean_replicationlist.R"),echo=TRUE)
 ```
 
-```{r clean_data,eval=FALSE} 
-source(file.path(programs,"04_clean_data.R"), echo=TRUE)
-```
+
+
+
 
 ## Core analysis and figures
+We can now tabulate the replications listed (not run) by journal and year:
+```{r list_journals,results='asis'}
+repllist4 <- readRDS(file=file.path(interwrk,"replication_list_clean.Rds"))
+table1 <- repllist4 %>% group_by(journal,year) %>% filter(!is.na(journal)) %>% summarize(n=n()) %>% spread(year,n)
+write.csv(table1,file.path(TexIncludes,"journal_by_year.csv"))
+knitr::kable(table1)
+```
+We also tabulate the replication results. Note that this is a noisy measure: in some cases, when only an assessment was made, replication was set to "no", which is incorrect.
+
+```{r list_journals2,results='asis'}
+
+table2 <- repllist4 %>% group_by(journal,replicated_clean) %>% filter(!is.na(journal)) %>% summarize(n=n()) %>% spread(replicated_clean,n)
+# the last entry is for NA
+names(table2)[length(names(table2))] <- "NA"
+write.csv(table2,file.path(TexIncludes,"journal_by_replicated.csv"))
+knitr::kable(table2)
+
+```
+Some quality diagnostics:
+```{r qa1,results='asis'}
+knitr::kable(repllist4 %>% mutate(flag_issue = as.numeric(is.na(`Main Issue`))) %>% filter(!is.na(journal)) %>%  group_by(flag_issue,replicated_clean) %>% summarise(n=n())  %>% spread(flag_issue,n),caption = "Presence of notes (Main Issue)")
+
+```
+
+## Replicators
+
+Overall, there were `r nrow(table(repllist4$Replicator))` Replicators.
+
+
+## NOT RUN YET
+
+
 The final program produces the tables and figures. 
 
 ```{r analytics,eval=FALSE}
