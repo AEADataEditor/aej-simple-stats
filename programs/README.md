@@ -140,7 +140,7 @@ source(file.path(programs,"libraries.R"), echo=TRUE)
 ```
 ## 
 ## > libraries <- c("dplyr", "devtools", "googlesheets", 
-## +     "rcrossref", "readr", "tidyr")
+## +     "rcrossref", "readr", "tidyr", "summarytools")
 ## 
 ## > results <- sapply(as.list(libraries), pkgTest)
 ```
@@ -162,6 +162,10 @@ source(file.path(programs,"libraries.R"), echo=TRUE)
 ```
 
 ```
+## Loading required package: summarytools
+```
+
+```
 ## 
 ## > cbind(libraries, results)
 ##      libraries      results
@@ -170,7 +174,8 @@ source(file.path(programs,"libraries.R"), echo=TRUE)
 ## [3,] "googlesheets" "OK"   
 ## [4,] "rcrossref"    "OK"   
 ## [5,] "readr"        "OK"   
-## [6,] "tidyr"        "OK"
+## [6,] "tidyr"        "OK"   
+## [7,] "summarytools" "OK"
 ```
 
 
@@ -430,18 +435,25 @@ We also tabulate the replication results. Note that this is a noisy measure: in 
 table2 <- repllist4 %>% group_by(journal,replicated_clean) %>% filter(!is.na(journal)) %>% summarize(n=n()) %>% spread(replicated_clean,n)
 # the last entry is for NA
 names(table2)[length(names(table2))] <- "NA"
+func <- function(z) if (is.numeric(z)) sum(z,na.rm=TRUE) else ''
+sumrow <- as.data.frame(lapply(table2, func))
+sumrow[1] <- "Total"
+names(sumrow)[length(sumrow)] <- "NA"
+table2 <- bind_rows(table2,sumrow)  %>% mutate(Sum = sum(no,partially,yes,`NA`,na.rm = TRUE))
 write.csv(table2,file.path(TexIncludes,"journal_by_replicated.csv"))
 knitr::kable(table2)
 ```
 
 
 
-journal                                          no   partially   yes    NA
----------------------------------------------  ----  ----------  ----  ----
-American Economic Journal: Applied Economics    195         118   111    82
-American Economic Journal: Macroeconomics        37          35    17    98
-American Economic Journal: Microeconomics        63          NA    NA   115
-American Economic Review                         NA          NA     1   120
+journal                                          no   partially   yes    NA   Sum
+---------------------------------------------  ----  ----------  ----  ----  ----
+American Economic Journal: Applied Economics    195         118   111    82   506
+American Economic Journal: Macroeconomics        37          35    17    98   187
+American Economic Journal: Microeconomics        63          NA    NA   115   178
+American Economic Review                         NA          NA     1   120   121
+Total                                           295         153   129   415   992
+
 Some quality diagnostics:
 
 ```r

@@ -69,10 +69,16 @@ We also tabulate the replication results. Note that this is a noisy measure: in 
 table2 <- repllist4 %>% group_by(journal,replicated_clean) %>% filter(!is.na(journal)) %>% summarize(n=n()) %>% spread(replicated_clean,n)
 # the last entry is for NA
 names(table2)[length(names(table2))] <- "NA"
+func <- function(z) if (is.numeric(z)) sum(z,na.rm=TRUE) else ''
+sumrow <- as.data.frame(lapply(table2, func))
+sumrow[1] <- "Total"
+names(sumrow)[length(sumrow)] <- "NA"
+table2 <- bind_rows(table2,sumrow)  %>% mutate(Sum = sum(no,partially,yes,`NA`,na.rm = TRUE))
 write.csv(table2,file.path(TexIncludes,"journal_by_replicated.csv"))
 knitr::kable(table2)
 
 ```
+
 Some quality diagnostics:
 ```{r qa1,results='asis'}
 knitr::kable(repllist4 %>% mutate(flag_issue = as.numeric(is.na(`Main Issue`))) %>% filter(!is.na(journal)) %>%  group_by(flag_issue,replicated_clean) %>% summarise(n=n())  %>% spread(flag_issue,n),caption = "Presence of notes (Main Issue)")

@@ -3,7 +3,7 @@
 
 
 #' Define the list of libraries
-libraries <- c("dplyr","devtools","googlesheets","rcrossref","readr","tidyr")
+libraries <- c("dplyr","devtools","googlesheets","rcrossref","readr","tidyr","summarytools")
 
 #install_github("cboettig/knitcitations")
 #install.packages("knitcitations")

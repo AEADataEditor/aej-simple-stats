@@ -215,13 +215,14 @@ $(document).ready(function () {
 <pre class="r"><code>source(file.path(programs,&quot;libraries.R&quot;), echo=TRUE)</code></pre>
 <pre><code>## 
 ## &gt; libraries &lt;- c(&quot;dplyr&quot;, &quot;devtools&quot;, &quot;googlesheets&quot;, 
-## +     &quot;rcrossref&quot;, &quot;readr&quot;, &quot;tidyr&quot;)
+## +     &quot;rcrossref&quot;, &quot;readr&quot;, &quot;tidyr&quot;, &quot;summarytools&quot;)
 ## 
 ## &gt; results &lt;- sapply(as.list(libraries), pkgTest)</code></pre>
 <pre><code>## Loading required package: googlesheets</code></pre>
 <pre><code>## Loading required package: rcrossref</code></pre>
 <pre><code>## Loading required package: readr</code></pre>
 <pre><code>## Loading required package: tidyr</code></pre>
+<pre><code>## Loading required package: summarytools</code></pre>
 <pre><code>## 
 ## &gt; cbind(libraries, results)
 ##      libraries      results
@@ -230,7 +231,8 @@ $(document).ready(function () {
 ## [3,] &quot;googlesheets&quot; &quot;OK&quot;   
 ## [4,] &quot;rcrossref&quot;    &quot;OK&quot;   
 ## [5,] &quot;readr&quot;        &quot;OK&quot;   
-## [6,] &quot;tidyr&quot;        &quot;OK&quot;</code></pre>
+## [6,] &quot;tidyr&quot;        &quot;OK&quot;   
+## [7,] &quot;summarytools&quot; &quot;OK&quot;</code></pre>
 </div>
 <div id="download-the-replication-data-from-google-sheet" class="section level2">
 <h2><span class="header-section-number">1.2</span> Download the replication data from Google Sheet</h2>
@@ -459,6 +461,11 @@ knitr::kable(table1)</code></pre>
 <pre class="r"><code>table2 &lt;- repllist4 %&gt;% group_by(journal,replicated_clean) %&gt;% filter(!is.na(journal)) %&gt;% summarize(n=n()) %&gt;% spread(replicated_clean,n)
 # the last entry is for NA
 names(table2)[length(names(table2))] &lt;- &quot;NA&quot;
+func &lt;- function(z) if (is.numeric(z)) sum(z,na.rm=TRUE) else ''
+sumrow &lt;- as.data.frame(lapply(table2, func))
+sumrow[1] &lt;- &quot;Total&quot;
+names(sumrow)[length(sumrow)] &lt;- &quot;NA&quot;
+table2 &lt;- bind_rows(table2,sumrow)  %&gt;% mutate(Sum = sum(no,partially,yes,`NA`,na.rm = TRUE))
 write.csv(table2,file.path(TexIncludes,&quot;journal_by_replicated.csv&quot;))
 knitr::kable(table2)</code></pre>
 <table>
@@ -469,6 +476,7 @@ knitr::kable(table2)</code></pre>
 <th align="right">partially</th>
 <th align="right">yes</th>
 <th align="right">NA</th>
+<th align="right">Sum</th>
 </tr>
 </thead>
 <tbody>
@@ -478,6 +486,7 @@ knitr::kable(table2)</code></pre>
 <td align="right">118</td>
 <td align="right">111</td>
 <td align="right">82</td>
+<td align="right">506</td>
 </tr>
 <tr class="even">
 <td align="left">American Economic Journal: Macroeconomics</td>
@@ -485,6 +494,7 @@ knitr::kable(table2)</code></pre>
 <td align="right">35</td>
 <td align="right">17</td>
 <td align="right">98</td>
+<td align="right">187</td>
 </tr>
 <tr class="odd">
 <td align="left">American Economic Journal: Microeconomics</td>
@@ -492,6 +502,7 @@ knitr::kable(table2)</code></pre>
 <td align="right">NA</td>
 <td align="right">NA</td>
 <td align="right">115</td>
+<td align="right">178</td>
 </tr>
 <tr class="even">
 <td align="left">American Economic Review</td>
@@ -499,16 +510,19 @@ knitr::kable(table2)</code></pre>
 <td align="right">NA</td>
 <td align="right">1</td>
 <td align="right">120</td>
+<td align="right">121</td>
 </tr>
 <tr class="odd">
-<td align="left">Some quality diagnostics:</td>
-<td align="right"></td>
-<td align="right"></td>
-<td align="right"></td>
-<td align="right"></td>
+<td align="left">Total</td>
+<td align="right">295</td>
+<td align="right">153</td>
+<td align="right">129</td>
+<td align="right">415</td>
+<td align="right">992</td>
 </tr>
 </tbody>
 </table>
+<p>Some quality diagnostics:</p>
 <pre class="r"><code>knitr::kable(repllist4 %&gt;% mutate(flag_issue = as.numeric(is.na(`Main Issue`))) %&gt;% filter(!is.na(journal)) %&gt;%  group_by(flag_issue,replicated_clean) %&gt;% summarise(n=n())  %&gt;% spread(flag_issue,n),caption = &quot;Presence of notes (Main Issue)&quot;)</code></pre>
 <table>
 <caption>Presence of notes (Main Issue)</caption>
